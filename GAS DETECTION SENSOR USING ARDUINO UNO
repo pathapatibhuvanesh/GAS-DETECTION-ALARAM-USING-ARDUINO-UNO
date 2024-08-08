@@ -1,0 +1,30 @@
+#include <Wire.h>  // Library for I2C communication
+#include <LiquidCrystal_I2C.h>  // Library for LCD via I2C
+#define GAS_SENSOR_PIN A0  // Pin for gas sensor
+#define LED_PIN 13  // Pin for LED
+#define THRESHOLD 200  // Threshold value for gas detection
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);  // Set the LCD address to 0x27 for a 16 chars and 2 line display
+
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+  Serial.begin(9600);  // Initialize serial communication
+  lcd.init();  // Initialize LCD
+  lcd.backlight();  // Turn on backlight
+  lcd.print("Gas Detector");  // Display initial message
+}
+void loop() {
+  int gasValue = analogRead(GAS_SENSOR_PIN);  // Read gas sensor value
+  Serial.print("Gas Value: ");
+  Serial.println(gasValue);
+ if (gasValue > THRESHOLD) {  // If gas value exceeds threshold
+    digitalWrite(LED_PIN, HIGH);  // Turn on LED
+    lcd.setCursor(0, 1);
+    lcd.print("Gas Detected!");  // Display alert message on LCD
+  } else {
+    digitalWrite(LED_PIN, LOW);  // Turn off LED
+    lcd.setCursor(0, 1);
+    lcd.print("                ");  // Clear LCD line
+  }
+  delay(1000);  // Delay for stability
+}
